@@ -1,69 +1,66 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const transactionForm = document.getElementById("transaction-form");
-    const transactionTable = document.getElementById("transaction-table").getElementsByTagName('tbody')[0];
-    const totalExpenseDisplay = document.getElementById("total-expense");
-    const totalIncomeDisplay = document.getElementById("total-income");
-    const currentMonthBtn = document.getElementById("current-month-btn");
-    const previousMonthBtn = document.getElementById("previous-month-btn");
+document.addEventListener("DOMContentLoaded", function() {
+  const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+  const addTransactionForm = document.getElementById("addTransactionForm");
+  const transactionList = document.getElementById("transactionList");
+  const previousMonthBtn = document.getElementById("previousMonthBtn");
+  const monthDropdown = document.getElementById("monthDropdown");
+  const monthSelect = document.getElementById("monthSelect");
 
-    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  // Populate month dropdown with previous months
+  populateMonthDropdown();
 
-    const updateTable = (filterMonth = new Date().getMonth()) => {
-        transactionTable.innerHTML = "";
-        let totalExpense = 0;
-        let totalIncome = 0;
+  previousMonthBtn.addEventListener("click", () => {
+    monthDropdown.style.display = monthDropdown.style.display === "none" ? "block" : "none";
+  });
 
-        transactions.forEach(transaction => {
-            const transactionDate = new Date(transaction.date);
-            if (transactionDate.getMonth() === filterMonth) {
-                const row = transactionTable.insertRow();
-                row.insertCell(0).innerText = transaction.description;
-                row.insertCell(1).innerText = transaction.amount;
-                row.insertCell(2).innerText = transaction.category;
-                row.insertCell(3).innerText = transaction.type;
-                row.insertCell(4).innerText = transaction.date;
+  monthSelect.addEventListener("change", function() {
+    displayTransactions(monthSelect.value);
+  });
 
-                if (transaction.type === 'expense') {
-                    totalExpense += parseFloat(transaction.amount);
-                } else {
-                    totalIncome += parseFloat(transaction.amount);
-                }
-            }
-        });
-
-        totalExpenseDisplay.innerText = totalExpense.toFixed(2);
-        totalIncomeDisplay.innerText = totalIncome.toFixed(2);
+  addTransactionForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    const transaction = {
+      date: document.getElementById("date").value,
+      description: document.getElementById("description").value,
+      amount: parseFloat(document.getElementById("amount").value),
+      category: document.getElementById("category").value,
+      type: document.getElementById("type").value
     };
+    
+    transactions.push(transaction);
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+    displayTransactions();
+    addTransactionForm.reset();
+  });
 
-    transactionForm.addEventListener("submit", function (e) {
-        e.preventDefault();
+  function displayTransactions(selectedMonth) {
+    transactionList.innerHTML = "";
+    
+    const filteredTransactions = selectedMonth ? 
+      transactions.filter(tx => tx.date.startsWith(selectedMonth)) :
+      transactions;
 
-        const description = document.getElementById("description").value;
-        const amount = parseFloat(document.getElementById("amount").value);
-        const category = document.getElementById("category").value;
-        const type = document.getElementById("transaction-type").value;
-        const date = document.getElementById("transaction-date").value;
-
-        const newTransaction = {
-            description,
-            amount,
-            category,
-            type,
-            date
-        };
-
-        transactions.push(newTransaction);
-        localStorage.setItem('transactions', JSON.stringify(transactions));
-        transactionForm.reset();
-        updateTable();
+    filteredTransactions.forEach(tx => {
+      const transactionItem = document.createElement("div");
+      transactionItem.classList.add("transaction-item");
+      transactionItem.innerHTML = `
+        <strong>${tx.date}</strong> - ${tx.description} - $${tx.amount.toFixed(2)} - ${tx.category} - ${tx.type}
+      `;
+      transactionList.appendChild(transactionItem);
     });
+  }
 
-    currentMonthBtn.addEventListener("click", () => updateTable(new Date().getMonth()));
-    previousMonthBtn.addEventListener("click", () => {
-        const lastMonth = new Date();
-        lastMonth.setMonth(lastMonth.getMonth() - 1);
-        updateTable(lastMonth.getMonth());
+  function populateMonthDropdown() {
+    const months = new Set(transactions.map(tx => tx.date.slice(0, 7)));
+    months.forEach(month => {
+      const option = document.createElement("option");
+      option.value = month;
+      option.textContent = month;
+      monthSelect.appendChild(option);
     });
+  }
 
-    updateTable();
+  // Initial display of transactions
+  displayTransactions();
 });
