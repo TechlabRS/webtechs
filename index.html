@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Expense Tracker</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+        <div class="nav">
+            <button id="current-month-btn">Current Month Transactions</button>
+            <button id="previous-month-btn">Previous Month Transactions</button>
+        </div>
+        
+        <form id="transaction-form">
+            <input type="text" id="description" placeholder="Description" required>
+            <input type="number" id="amount" placeholder="Amount" required>
+            <select id="category">
+                <option value="Cash">Cash</option>
+                <option value="Fruits">Fruits</option>
+                <option value="Medicine">Medicine</option>
+                <option value="Home">Home</option>
+                <option value="Health">Health</option>
+                <option value="Test Report">Test Report</option>
+                <option value="Travel">Travel</option>
+                <option value="Food and Drinks">Food and Drinks</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Electronic">Electronic</option>
+                <option value="Others">Others</option>
+            </select>
+            <select id="transaction-type">
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+            </select>
+            <input type="date" id="transaction-date" required>
+            <button type="submit">Add Transaction</button>
+        </form>
+
+        <h2>Transaction List</h2>
+        <table id="transaction-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        
+        <h3>Total Expenses: <span id="total-expense">0</span></h3>
+        <h3>Total Income: <span id="total-income">0</span></h3>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
